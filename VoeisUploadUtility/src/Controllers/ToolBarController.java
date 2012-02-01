@@ -55,6 +55,8 @@ public class ToolBarController extends AbstractController{
             tModel.exitApplication();  
         else if (DATA_INTERVAL.equals(action))
             tModel.loadUploadInterval();
+        else if (PUSH_LOGS.equals(action))
+            tModel.openLogs();
 //        else if (COPY.equals(action))
 //            tModel.copy(view.getClipboardMember());
 //        else if (PASTE.equals(action))

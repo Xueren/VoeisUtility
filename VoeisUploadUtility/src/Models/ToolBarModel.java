@@ -4,6 +4,7 @@
  */
 package Models;
 
+import Classes.LogFile;
 import Views.AboutView;
 import Views.IntervalView;
 import javax.swing.JFrame;
@@ -31,5 +32,9 @@ public class ToolBarModel implements IModel{
         frame.add(dView);
         frame.pack();
         frame.setVisible(true);
+    }
+
+    public void openLogs() {
+        
     }
 }
