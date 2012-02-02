@@ -12,10 +12,8 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 import javax.swing.JOptionPane;
 
 /**
@@ -27,24 +25,24 @@ import javax.swing.JOptionPane;
  */
 public class LogFile {
     
-    //TODO: Create a folder as a default directory to store the logs wherever the application is
-    //      installed.
     private String logDirectory;   
     private final File dataFile;
     private final String pushTime;
     private final String serverResponse;
-    private final String status;
     private File logFile;
-    private final String user = System.getProperty("user.name");    //Change this to actual user on the Hub
+    private final String user;
     
-    public LogFile( File dataFile, String pushTime, String serverResponse, String status) {
-        this.dataFile = dataFile;
+    public LogFile( File dataFile, String pushTime, String serverResponse, String user) {       //Some of these parameters might need to be refactored out of the 
+        this.dataFile = dataFile;                                                               //class constructor.
         this.pushTime = pushTime;
         this.serverResponse = serverResponse;
-        this.status = status;
-    }
+        this.user = user;
+    }    
     
-    public void writeLog() {   
+    public void writeLog() {  
+        
+        
+        
         logDirectory = getCurrentDirectory();
         logFile = new File(logDirectory + "pushLog.txt");
         if (!logFile.exists()) {
@@ -100,12 +98,13 @@ public class LogFile {
         }
     }
 
-    public void openLog(File log) {
+    public void openLog() {
         try {
             Desktop desktop = Desktop.getDesktop();
-            
-            if (log.exists()) 
-                desktop.open(log);
+            logDirectory = getCurrentDirectory();
+            logFile = new File(logDirectory + "pushLog.txt");            
+            if (logFile.exists()) 
+                desktop.open(logFile);
             else
                 JOptionPane.showMessageDialog(null, "No log file exists.");
         } catch (IOException ex) {
