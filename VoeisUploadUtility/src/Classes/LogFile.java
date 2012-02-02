@@ -9,8 +9,13 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 import javax.swing.JOptionPane;
 
 /**
@@ -24,47 +29,70 @@ public class LogFile {
     
     //TODO: Create a folder as a default directory to store the logs wherever the application is
     //      installed.
-    private final String logDirectory = "C:\\Users\\afannin1\\Desktop\\";   //JUST FOR TESTING
+    private String logDirectory;   
     private final File dataFile;
     private final String pushTime;
     private final String serverResponse;
+    private final String status;
+    private File logFile;
+    private final String user = System.getProperty("user.name");    //Change this to actual user on the Hub
     
-    public LogFile( File dataFile, String pushTime, String serverResponse) {
+    public LogFile( File dataFile, String pushTime, String serverResponse, String status) {
         this.dataFile = dataFile;
         this.pushTime = pushTime;
         this.serverResponse = serverResponse;
+        this.status = status;
     }
     
-    public void writeLog(File logFile) {
+    public void writeLog() {   
+        logDirectory = getCurrentDirectory();
+        logFile = new File(logDirectory + "pushLog.txt");
         if (!logFile.exists()) {
             createNewLog();
         }
         else {
-            addToLog(logFile);
+            addToLog();
         }
     }
 
-    private boolean createNewLog() {
-        FileWriter fileWriter = null;
+    private void createNewLog() {
+        //FileWriter fileWriter = null;
         BufferedWriter buffWriter = null;
+        DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+        Date timeStamp = new Date();
         
         try {
-            fileWriter = new FileWriter(logDirectory + "pushLog.txt");  //put some identifier here to signify the user
-            buffWriter = new BufferedWriter(fileWriter);
+            buffWriter = writeNewLog(buffWriter, dateFormat, timeStamp);
             
-            buffWriter.write("Data File: " + dataFile.toString()
-                             + "\nPush Time: " + pushTime
-                             +"\nServer Response: " + serverResponse);
-            
-            return true;
         }
         catch (Exception ex) {
+            ex.printStackTrace();
             Logger.getLogger(LogFile.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
         }
         finally {
             try {
-                fileWriter.close();
+                //fileWriter.close();
+                buffWriter.close();
+            } catch (IOException ex) {
+                Logger.getLogger(LogFile.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }        
+    }
+
+    private void addToLog() {
+        BufferedWriter buffWriter = null;
+        DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+        Date timeStamp = new Date();
+        
+        try {
+            buffWriter = writeToLog(buffWriter, dateFormat, timeStamp);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+            Logger.getLogger(LogFile.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        finally {
+            try {
                 buffWriter.close();
             } catch (IOException ex) {
                 Logger.getLogger(LogFile.class.getName()).log(Level.SEVERE, null, ex);
@@ -72,34 +100,6 @@ public class LogFile {
         }
     }
 
-    private boolean addToLog(File logFile) {
-        FileWriter fileWriter = null;
-        BufferedWriter buffWriter = null;
-        
-        try {
-            fileWriter = new FileWriter(logFile);
-            buffWriter = new BufferedWriter(fileWriter);
-            
-            buffWriter.write("Data File: " + dataFile.toString()
-                             + "\nPush Time: " + pushTime
-                             +"\nServer Response: " + serverResponse
-                             +"\n\n");
-            return true;
-        }
-        catch (Exception ex) {
-            Logger.getLogger(LogFile.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
-        finally {
-            try {
-                fileWriter.close();
-                buffWriter.close();
-            } catch (IOException ex) {
-                Logger.getLogger(LogFile.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
-    
     public void openLog(File log) {
         try {
             Desktop desktop = Desktop.getDesktop();
@@ -112,4 +112,49 @@ public class LogFile {
             Logger.getLogger(LogFile.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    private String getCurrentDirectory() {
+        return System.getProperty("user.dir");
+    }
+    
+    private BufferedWriter writeToLog(BufferedWriter buffWriter, DateFormat dateFormat, Date timeStamp) throws IOException {
+        buffWriter = new BufferedWriter(new FileWriter(logFile, true));
+        buffWriter.write("===========================================================================");
+        buffWriter.newLine();
+        buffWriter.write(dateFormat.format(timeStamp));
+        buffWriter.newLine();
+        buffWriter.newLine();
+        buffWriter.write("User: " + user);
+        buffWriter.newLine();
+        buffWriter.write("Data File: " + dataFile.toString());
+        buffWriter.newLine();
+        buffWriter.write("Push Time: " + pushTime);
+        buffWriter.newLine();
+        buffWriter.write("Server Response: " + serverResponse);
+        buffWriter.newLine();
+        buffWriter.write("===========================================================================");
+        buffWriter.newLine();
+        return buffWriter;
+    }
+
+    private BufferedWriter writeNewLog(BufferedWriter buffWriter, DateFormat dateFormat, Date timeStamp) throws IOException {
+        //fileWriter = new FileWriter(logDirectory + "pushLog.txt");  //put some identifier here to signify the user
+        buffWriter = new BufferedWriter(new FileWriter(logFile));
+        buffWriter.write("===========================================================================");
+        buffWriter.newLine();
+        buffWriter.write(dateFormat.format(timeStamp));
+        buffWriter.newLine();
+        buffWriter.newLine();
+        buffWriter.write("User: " + user);
+        buffWriter.newLine();
+        buffWriter.write("Data File: " + dataFile.toString());
+        buffWriter.newLine();
+        buffWriter.write("Push Time: " + pushTime);
+        buffWriter.newLine();
+        buffWriter.write("Server Response: " + serverResponse);
+        buffWriter.newLine();
+        buffWriter.write("===========================================================================");
+        buffWriter.newLine();
+        return buffWriter;
+    }    
 }

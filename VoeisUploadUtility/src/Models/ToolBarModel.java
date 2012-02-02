@@ -7,6 +7,8 @@ package Models;
 import Classes.LogFile;
 import Views.AboutView;
 import Views.IntervalView;
+import Views.LogView;
+import java.io.File;
 import javax.swing.JFrame;
 
 /**
@@ -35,6 +37,10 @@ public class ToolBarModel implements IModel{
     }
 
     public void openLogs() {
-        
+        File testFile = new File("test.txt");
+        LogFile log = new LogFile(testFile, "02/22/11 00:00:00", "Everything is going OK", "Succeeded");
+        log.writeLog();
+        //LogView log = new LogView();
+        //log.setVisible(true);
     }
 }
