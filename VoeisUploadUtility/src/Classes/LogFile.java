@@ -32,17 +32,14 @@ public class LogFile {
     private File logFile;
     private final String user;
     
-    public LogFile( File dataFile, String pushTime, String serverResponse, String user) {       //Some of these parameters might need to be refactored out of the 
+    public LogFile(File dataFile, String pushTime, String serverResponse, String user) {       //Some of these parameters might need to be refactored out of the 
         this.dataFile = dataFile;                                                               //class constructor.
         this.pushTime = pushTime;
         this.serverResponse = serverResponse;
         this.user = user;
     }    
     
-    public void writeLog() {  
-        
-        
-        
+    public void writeLog() {    
         logDirectory = getCurrentDirectory();
         logFile = new File(logDirectory + "pushLog.txt");
         if (!logFile.exists()) {
@@ -98,15 +95,28 @@ public class LogFile {
         }
     }
 
+    //The logs will open in the default text editor as long as the OS supports
+    //the Java Desktop API.
+    //TESTED OPERATING SYSTEMS
+    //Windows 7:    Succeeded
+    //Ubuntu 11.10: Failed
+    //Mac OSX Lion: ?????????
     public void openLog() {
         try {
+            if (Desktop.isDesktopSupported()) {
             Desktop desktop = Desktop.getDesktop();
             logDirectory = getCurrentDirectory();
-            logFile = new File(logDirectory + "pushLog.txt");            
+            logFile = new File(logDirectory + "pushLog.txt");  
             if (logFile.exists()) 
                 desktop.open(logFile);
             else
                 JOptionPane.showMessageDialog(null, "No log file exists.");
+            }
+            else
+                if (logFile.exists())
+                    getLogForNotSupported();
+                else
+                    JOptionPane.showMessageDialog(null, "No log file exists.");
         } catch (IOException ex) {
             Logger.getLogger(LogFile.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -155,5 +165,12 @@ public class LogFile {
         buffWriter.write("===========================================================================");
         buffWriter.newLine();
         return buffWriter;
-    }    
+    }
+    //Method that will return the log data back to the class.  Can be sent to the
+    //application.  This will be implemented when version control is set up on
+    //my OSX and Linux systems.
+    //Andrew Fannin - 02/03/12
+    private void getLogForNotSupported() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
 }

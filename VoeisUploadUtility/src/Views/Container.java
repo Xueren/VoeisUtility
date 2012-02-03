@@ -128,12 +128,7 @@ public class Container extends JFrame {
         intervalItem.setActionCommand("interval");
         intervalItem.addActionListener(al);
         logItem.setActionCommand("logs");
-        logItem.addActionListener(al);
-//        copyItem.setActionCommand("copy");
-//        copyItem.addActionListener(al);
-//        pasteItem.setActionCommand("paste");
-//        pasteItem.addActionListener(al);
-        
+        logItem.addActionListener(al);        
         
         aboutItem.setActionCommand("about");
         aboutItem.addActionListener(al);
