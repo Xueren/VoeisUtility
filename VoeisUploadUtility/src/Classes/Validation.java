@@ -4,6 +4,7 @@
  */
 package Classes;
 
+import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 /**
@@ -41,5 +42,26 @@ public class Validation {
             return true;
         else
             return false;
+    }
+    
+    public boolean isEmpty(String string) {
+        if (string.length() < 0)
+            return true;
+        else
+            return false;
+    }
+
+    public boolean file(File file) {    
+        if (file == null)
+            return false;
+        else {
+        if (isEmpty(file.toString()))
+                return false;
+        else
+            if (file.exists())
+                return true;
+             else
+                return false;
+        }
     }
 }

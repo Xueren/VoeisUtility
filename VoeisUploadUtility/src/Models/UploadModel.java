@@ -32,8 +32,12 @@ public class UploadModel {
     public boolean validateInt(String text) {
         return validate.integerTextField(text);
     }
+    
+    public boolean validateFile(File file) {
+        return validate.file(file);
+    }
 
-    public void uploadData(final File file, final String apiKey, final String projectKey, final int templateId, final int startLine) {
+    public void uploadData(final File file, final String apiKey, final String projectKey, final int templateId, final int startLine) throws Exception {
         UploadData push = new UploadData(file, templateId, startLine, apiKey, projectKey);
         push.uploadLoggerData();
     }
