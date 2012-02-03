@@ -41,7 +41,7 @@ public class UploadController extends AbstractController{
         if (UPLOAD.equals(action))
         {
             
-            if (file.exists() && model.validateText(apiKey) && model.validateText(projectKey) && model.validateInt(templateId) && model.validateInt(startLine))  
+            if (model.validateFile(file) && model.validateText(apiKey) && model.validateText(projectKey) && model.validateInt(templateId) && model.validateInt(startLine))  
             {
                 template = Integer.parseInt(templateId);
                 start = Integer.parseInt(startLine);

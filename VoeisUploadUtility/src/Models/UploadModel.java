@@ -37,4 +37,11 @@ public class UploadModel {
         UploadData push = new UploadData(file, templateId, startLine, apiKey, projectKey);
         push.uploadLoggerData();
     }
+
+    public boolean validateFile(File file) {
+        if (file.exists() && file.toString().length() > 0)
+            return true;
+        else
+            return false;
+    }
 }
