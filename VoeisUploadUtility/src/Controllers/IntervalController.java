@@ -6,6 +6,7 @@ package Controllers;
 
 import Classes.Validation;
 import Models.IntervalModel;
+import Models.ToolBarModel;
 import Views.IntervalView;
 import java.awt.event.ActionEvent;
 import javax.swing.JOptionPane;
@@ -20,10 +21,12 @@ public class IntervalController extends AbstractController{
     private final String CANCEL = "cancel";
     IntervalModel model;
     IntervalView view;
+    ToolBarModel tModel;
     
-    public IntervalController(IntervalModel model, IntervalView view) {
+    public IntervalController(IntervalModel model, IntervalView view, ToolBarModel tModel) {
         this.model = model;
         this.view = view;
+        this.tModel = tModel;
         view.setActionListeners(this);
     }
 
@@ -45,8 +48,7 @@ public class IntervalController extends AbstractController{
                 JOptionPane.showMessageDialog(view, "Some required fields were not filled out correctly.\nPlease try again");
         }
         else if (CANCEL.equals(action)){
-            //Close the JFrame
-        }
-       
+            tModel.disposeFrame();
+        }         
     }
 }

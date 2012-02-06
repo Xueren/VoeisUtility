@@ -6,8 +6,15 @@ package Classes;
 
 import java.net.*;
 import java.io.*;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 /**
  *
  * @author afannin1
@@ -33,28 +40,62 @@ public class UploadData {
     
     //check last record for changes
     public String uploadLoggerData() throws Exception {
+        //This was added to trust all certificates so that SSLExceptions would not be thrown.
+        //Needs to be taken out eventually, when certificate can be validated.
+        try {
+          final TrustManager[] trustAllCerts = new TrustManager[] {new X509TrustManager() {
+              @Override
+              public void checkClientTrusted(final X509Certificate[] chain, final String authType) {    
+              }
+
+                @Override
+                public void checkServerTrusted(X509Certificate[] xcs, String string) throws CertificateException {
+                }
+
+                @Override
+                public X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
+          }
+        };
+          
+          //Install trust manager for all certs
+          final SSLContext sslContext = SSLContext.getInstance("SSL");
+          sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+          //Create ssl socket factory
+          final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();        
+       
         URL url;
         HttpURLConnection connection = null;
-        String target = "https://voeis.msu.montana.edu/projects/" + project + "/apvis/upload_logger_data.json?api_key=" + apiKey;
+        String target = "https://voeis-dev.msu.montana.edu/projects/" + project + "/apvis/upload_logger_data.json?api_key=" + apiKey;
         String params =  URLEncoder.encode("datafile", "UTF-8") + "=" + URLEncoder.encode(dataFile.toString(), "UTF-8");
             params += "&" + URLEncoder.encode("data_template_id", "UTF-8") + "=" + URLEncoder.encode(String.valueOf(templateId), "UTF-8");
             params += "&" + URLEncoder.encode("start_line", "UTF-8") + "=" + URLEncoder.encode(String.valueOf(startLine), "UTF-8");
+            
+            
         
         try {
             url = new URL(target);
             connection = (HttpURLConnection)url.openConnection();
+            ((HttpsURLConnection) connection).setSSLSocketFactory(sslSocketFactory);
             connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application");
+            //connection.setRequestProperty("Content-Type", "application");
+            connection.setRequestProperty("Accept", "*/*");
+            connection.setRequestProperty("Content-Length", "" + params.length());
             
             connection.setUseCaches(false);
             connection.setDoInput(true);
             connection.setDoOutput(true);
             
             //Request
-            DataOutputStream out = new DataOutputStream (connection.getOutputStream());
-            out.writeBytes(params);
+            //DataOutputStream out = new DataOutputStream (connection.getOutputStream());
+            //out.writeBytes(params);
+            //out.flush();
+            //out.close();
+            
+            OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
+            out.write(params);
             out.flush();
-            out.close();
             
             //Response
             InputStream in = connection.getInputStream();
@@ -62,10 +103,12 @@ public class UploadData {
             String line;
             StringBuffer response = new StringBuffer();
             while((line = rd.readLine()) != null) {
-                response.append(line);
-                response.append('\r');
+                //response.append(line);
+                //response.append('\r');
+                System.out.println(line);
             }
             rd.close();
+            out.close();
             return response.toString();
         }
         catch (Exception e) {
@@ -75,6 +118,11 @@ public class UploadData {
         finally {
             if (connection != null) 
                 connection.disconnect();
+        }
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
         }
         
     }

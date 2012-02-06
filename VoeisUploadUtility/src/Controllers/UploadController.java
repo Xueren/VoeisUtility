@@ -8,6 +8,8 @@ import Models.UploadModel;
 import Views.MainView;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -43,10 +45,14 @@ public class UploadController extends AbstractController{
             
             if (model.validateFile(file) && model.validateText(apiKey) && model.validateText(projectKey) && model.validateInt(templateId) && model.validateInt(startLine))  
             {
-                template = Integer.parseInt(templateId);
-                start = Integer.parseInt(startLine);
-                
-                model.uploadData(file, apiKey, projectKey, template, start);
+                try {
+                    template = Integer.parseInt(templateId);
+                    start = Integer.parseInt(startLine);
+                    
+                    model.uploadData(file, apiKey, projectKey, template, start);
+                } catch (Exception ex) {
+                    Logger.getLogger(UploadController.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
                 else 
                     JOptionPane.showMessageDialog(view, "Some required fields were not filled out correctly.\nPlease try again.");

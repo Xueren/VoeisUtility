@@ -12,6 +12,7 @@ package Views;
 
 import Controllers.IntervalController;
 import Models.IntervalModel;
+import Models.ToolBarModel;
 import java.awt.event.ActionListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -28,10 +29,12 @@ public class IntervalView extends javax.swing.JPanel {
     private String dateString;
     private String units;
     private int interval;
+    ToolBarModel tModel;
     /** Creates new form IntervalView */
-    public IntervalView() {
+    public IntervalView(ToolBarModel tModel) {
         initComponents();
-        IntervalController iController = new IntervalController(iModel, this);
+        this.tModel = tModel;
+        IntervalController iController = new IntervalController(iModel, this, tModel);
     }
     
     public void setDateString(String dateString) {

@@ -15,6 +15,8 @@ import javax.swing.JFrame;
  */
 public class ToolBarModel implements IModel{
     
+    private JFrame frame = new JFrame();
+    
     public void exitApplication() {
         System.exit(0);
     }
@@ -25,8 +27,8 @@ public class ToolBarModel implements IModel{
     }
 
     public void loadUploadInterval() {
-        IntervalView dView = new IntervalView();
-        JFrame frame = new JFrame();
+        IntervalView dView = new IntervalView(this);
+
         frame.setTitle("Set Data Upload Interval");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.add(dView);
@@ -42,5 +44,9 @@ public class ToolBarModel implements IModel{
          */
         LogFile log = new LogFile(null,null,null,null);     //Bad way of doing this
         log.openLog();
+    }
+    
+    public void disposeFrame() {
+        frame.dispose();
     }
 }
