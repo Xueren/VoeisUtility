@@ -14,10 +14,6 @@ import Controllers.IntervalController;
 import Models.IntervalModel;
 import Models.ToolBarModel;
 import java.awt.event.ActionListener;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import javax.swing.JFormattedTextField;
 
 /**
  *

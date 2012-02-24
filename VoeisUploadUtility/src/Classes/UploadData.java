@@ -8,13 +8,14 @@ import java.net.*;
 import java.io.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+
+
+
 /**
  *
  * @author afannin1
@@ -36,6 +37,36 @@ public class UploadData {
         this.startLine = startLine;        
         this.apiKey = apiKey;
         this.project = project;
+    }
+    
+    public String uploadLoggerDataSocket() throws Exception {
+        String params =  URLEncoder.encode("datafile", "UTF-8") + "=" + URLEncoder.encode(dataFile.toString(), "UTF-8");
+            params += "&" + URLEncoder.encode("data_template_id", "UTF-8") + "=" + URLEncoder.encode(String.valueOf(templateId), "UTF-8");
+            params += "&" + URLEncoder.encode("start_line", "UTF-8") + "=" + URLEncoder.encode(String.valueOf(startLine), "UTF-8");
+            
+        String hostname = "https://voeis-dev.msu.montana.edu";
+        int port = 80;
+        InetAddress address = InetAddress.getByName(hostname);
+        Socket socket = new Socket(address, port);
+        
+        String path = "/projects/" + project + "/apivs/upload_logger_data.json?api_key=" + apiKey;
+        BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
+        wr.write("POST " + path + " HTTP/1.0\r\n");
+        wr.write("Content-Length:" + params.length()+"\r\n");
+        wr.write("Content-Type: application/x-www-form-urlencoded\r\n");
+        wr.write("\r\n");
+    
+        wr.write(params);
+        wr.flush();
+        
+        BufferedReader rd = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        String line;
+        while ((line = rd.readLine()) != null) {
+            System.out.println(line);
+        }
+        wr.close();
+        rd.close();
+        return line;
     }
     
     //check last record for changes
@@ -67,7 +98,7 @@ public class UploadData {
        
         URL url;
         HttpURLConnection connection = null;
-        String target = "https://voeis-dev.msu.montana.edu/projects/" + project + "/apvis/upload_logger_data.json?api_key=" + apiKey;
+        String target = "https://voeis-dev.msu.montana.edu/projects/" + project + "/apivs/upload_data.json?api_key=" + apiKey;
         String params =  URLEncoder.encode("datafile", "UTF-8") + "=" + URLEncoder.encode(dataFile.toString(), "UTF-8");
             params += "&" + URLEncoder.encode("data_template_id", "UTF-8") + "=" + URLEncoder.encode(String.valueOf(templateId), "UTF-8");
             params += "&" + URLEncoder.encode("start_line", "UTF-8") + "=" + URLEncoder.encode(String.valueOf(startLine), "UTF-8");
@@ -79,7 +110,7 @@ public class UploadData {
             connection = (HttpURLConnection)url.openConnection();
             ((HttpsURLConnection) connection).setSSLSocketFactory(sslSocketFactory);
             connection.setRequestMethod("POST");
-            //connection.setRequestProperty("Content-Type", "application");
+            connection.setRequestProperty("Content-Type", "application");
             connection.setRequestProperty("Accept", "*/*");
             connection.setRequestProperty("Content-Length", "" + params.length());
             
@@ -98,7 +129,17 @@ public class UploadData {
             out.flush();
             
             //Response
-            InputStream in = connection.getInputStream();
+           
+           InputStream in = null;
+           try {
+            in = connection.getInputStream();
+           }
+           catch (Exception ex)
+           {
+               in = connection.getErrorStream();
+               System.out.println(connection.getErrorStream());
+               System.out.println("\n\n" + ex.toString());
+           }
             BufferedReader rd = new BufferedReader(new InputStreamReader(in));
             String line;
             StringBuffer response = new StringBuffer();
@@ -139,29 +180,5 @@ public class UploadData {
     
     private String getProjectUrl() throws UnsupportedEncodingException {
         return projectUrl = URLEncoder.encode("projects/", "UTF-8") + URLEncoder.encode(project, "UTF-8");
-    }
-    
-    private String constructData() {
-        try {
-            String data = URLEncoder.encode("datafile", "UTF-8") + "=" + URLEncoder.encode(dataFile.toString(), "UTF-8");
-            data += "&" + URLEncoder.encode("data_template_id", "UTF-8") + "=" + URLEncoder.encode(String.valueOf(templateId), "UTF-8");
-            data += "&" + URLEncoder.encode("start_line", "UTF-8") + "=" + URLEncoder.encode(String.valueOf(startLine), "UTF-8");
-            data += "&" + URLEncoder.encode("api_key", "UTF-8") + "=" + URLEncoder.encode(apiKey, "UTF-8");
-            
-            return data;
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(UploadData.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
-    }
-
-    private void pipe(Reader reader, Writer writer) throws IOException{
-        char[] buf = new char[1024];
-        int read = 0;
-    while ((read = reader.read(buf)) >= 0)
-    {
-    writer.write(buf, 0, read); 
-    }
-    writer.flush();
     }
 }

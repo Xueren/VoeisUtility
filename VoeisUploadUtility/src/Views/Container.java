@@ -25,7 +25,8 @@ import javax.swing.text.DefaultEditorKit;
  * @author afannin1
  */
 public class Container extends JFrame {
-    MainView panel = new MainView();
+    //MainView panel = new MainView(); //OLD VIEW
+    ClientView panel = new ClientView();
     ToolBarModel tModel = new ToolBarModel();
     UploadModel uModel = new UploadModel();
     //File Menu Members

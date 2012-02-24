@@ -5,6 +5,7 @@
 package Controllers;
 
 import Models.UploadModel;
+import Views.ClientView;
 import Views.MainView;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -21,10 +22,10 @@ public class UploadController extends AbstractController{
     public static final String UPLOAD = "upload";
         
     UploadModel model;
-    MainView view;
+    ClientView view;
    
     @SuppressWarnings("LeakingThisInConstructor")
-    public UploadController(UploadModel model, MainView view) {
+    public UploadController(UploadModel model, ClientView view) {
         this.model = model;
         this.view = view;
         view.setActionListeners(this);
@@ -40,9 +41,9 @@ public class UploadController extends AbstractController{
         final String startLine = view.getStartLine();
         int template;
         int start;
+        
         if (UPLOAD.equals(action))
-        {
-            
+        {            
             if (model.validateFile(file) && model.validateText(apiKey) && model.validateText(projectKey) && model.validateInt(templateId) && model.validateInt(startLine))  
             {
                 try {
@@ -52,6 +53,7 @@ public class UploadController extends AbstractController{
                     model.uploadData(file, apiKey, projectKey, template, start);
                 } catch (Exception ex) {
                     Logger.getLogger(UploadController.class.getName()).log(Level.SEVERE, null, ex);
+                    ex.printStackTrace();   //Debug when the socket connection fails
                 }
             }
                 else 

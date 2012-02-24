@@ -6,6 +6,7 @@ package Controllers;
 
 import Models.ToolBarModel;
 import Models.UploadModel;
+import Views.ClientView;
 import Views.Container;
 import Views.MainView;
 import java.awt.event.ActionEvent;
@@ -30,11 +31,11 @@ public class ToolBarController extends AbstractController{
     public static final String ABOUT = "about";
     
     ToolBarModel tModel;
-    MainView view;
+    ClientView view;
     Container container;
     UploadModel uModel;
     
-    public ToolBarController(ToolBarModel tModel, MainView view, Container container, UploadModel uModel)
+    public ToolBarController(ToolBarModel tModel, ClientView view, Container container, UploadModel uModel)
     {
         this.tModel = tModel;
         this.view = view;
