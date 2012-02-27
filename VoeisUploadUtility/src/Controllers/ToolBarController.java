@@ -5,7 +5,7 @@
 package Controllers;
 
 import Models.ToolBarModel;
-import Models.UploadModel;
+import Models.ClientModel;
 import Views.ClientView;
 import Views.Container;
 import Views.MainView;
@@ -33,9 +33,9 @@ public class ToolBarController extends AbstractController{
     ToolBarModel tModel;
     ClientView view;
     Container container;
-    UploadModel uModel;
+    ClientModel uModel;
     
-    public ToolBarController(ToolBarModel tModel, ClientView view, Container container, UploadModel uModel)
+    public ToolBarController(ToolBarModel tModel, ClientView view, Container container, ClientModel uModel)
     {
         this.tModel = tModel;
         this.view = view;

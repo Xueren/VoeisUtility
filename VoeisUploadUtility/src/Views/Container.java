@@ -5,9 +5,9 @@
 package Views;
 
 import Controllers.ToolBarController;
-import Controllers.UploadController;
+import Controllers.ClientController;
 import Models.ToolBarModel;
-import Models.UploadModel;
+import Models.ClientModel;
 import java.awt.BorderLayout;
 import java.awt.HeadlessException;
 import java.awt.event.ActionListener;
@@ -28,7 +28,7 @@ public class Container extends JFrame {
     //MainView panel = new MainView(); //OLD VIEW
     ClientView panel = new ClientView();
     ToolBarModel tModel = new ToolBarModel();
-    UploadModel uModel = new UploadModel();
+    ClientModel uModel = new ClientModel();
     //File Menu Members
     JMenuItem openItem = new JMenuItem("Open          Ctrl + O");
     JMenuItem saveItem = new JMenuItem("Save          Ctrl + S");
@@ -53,7 +53,7 @@ public class Container extends JFrame {
     }
 
     private void initComponents() throws HeadlessException {
-        UploadController uController = new UploadController(uModel, panel);
+        ClientController uController = new ClientController(uModel, panel);
         setFrame();
     }
     

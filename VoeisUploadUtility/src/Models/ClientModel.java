@@ -12,7 +12,7 @@ import java.io.File;
  *
  * @author afannin1
  */
-public class UploadModel {
+public class ClientModel {
 
     private String pushInterval;
     Validation validate = new Validation();

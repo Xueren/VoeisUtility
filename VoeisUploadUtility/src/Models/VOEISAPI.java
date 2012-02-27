@@ -4,6 +4,10 @@
  */
 package Models;
 
+import JSONClasses.JSONArray;
+import JSONClasses.JSONObject;
+import JSONClasses.JSONParser;
+import JSONClasses.JSONTokener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -38,9 +42,8 @@ public class VOEISAPI implements IModel{
     
     public Map<Object, String> get_project_sites() {
         Map<Object, String> siteMap = new HashMap<Object, String>();
-        
         try {
-            connectToDataHub("/apivs/get_project_sites.json?", "GET", null);
+            siteMap = JSONParser.getSites(httpGetRequest("/apivs/get_project_sites.json?", null));
         } catch (Exception ex) {
             Logger.getLogger(VOEISAPI.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -49,12 +52,12 @@ public class VOEISAPI implements IModel{
     
     public Map<Object, String> get_project_data_templates(final String siteID) {
         Map<Object, String> dataTemplateMap = new HashMap<Object, String>();
-        
+      
         String[][] params = new String[1][2];   //Maybe change to a hash table
         params[0][0] = "id";
         params[0][1] = siteID.toString();
         try {
-            connectToDataHub("/apivs/get_project_data_templates.json?", "GET", null);
+            httpGetRequest("/apivs/get_project_data_templates.json?", null);
         }
         catch(Exception ex) {
             ex.printStackTrace();
@@ -63,13 +66,16 @@ public class VOEISAPI implements IModel{
         return dataTemplateMap;
     }
 
-    private void connectToDataHub(String methodCall, String requestType, String[][] params) throws IOException, NoSuchAlgorithmException, KeyManagementException {
+    private JSONArray httpGetRequest(String methodCall, String[][] params) throws IOException, NoSuchAlgorithmException, KeyManagementException {
         
         SSLSocketFactory sslSocketFactory = bypassCerts();  //DEV!!!
         
+        JSONTokener tokener;
+        JSONArray parsedArray = null;
+
           URL url;
           HttpURLConnection connection = null;
-          String target = devHost + projectID + methodCall;;
+          String target = devHost + projectID + methodCall;
           BufferedReader reader = null;
           StringBuilder builder = null;
           String line = null;
@@ -78,7 +84,7 @@ public class VOEISAPI implements IModel{
               url = new URL(target);
               connection = (HttpURLConnection)url.openConnection();
               ((HttpsURLConnection) connection).setSSLSocketFactory(sslSocketFactory);
-              connection.setRequestMethod(requestType);
+              connection.setRequestMethod("GET");
               connection.setDoOutput(true);
               connection.setReadTimeout(10000);
               
@@ -91,13 +97,21 @@ public class VOEISAPI implements IModel{
                   builder.append(line).append('\n');
               }
               
-              System.out.println(builder.toString());
+              tokener = new JSONTokener(builder.toString());
+              parsedArray = new JSONArray(tokener);
+              //parsedString = new JSONObject(tokener);
+              JSONParser.printJSONString(parsedArray);
+              //System.out.println(builder.toString());
           }
+                  catch (Exception ex){
+                      ex.printStackTrace();
+                  }
           finally {
               connection.disconnect();
               reader = null;
               builder = null;
               connection = null;
+              return parsedArray;
           }
     }
 
