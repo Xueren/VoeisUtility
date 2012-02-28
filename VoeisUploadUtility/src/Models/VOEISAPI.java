@@ -9,8 +9,12 @@ import JSONClasses.JSONObject;
 import JSONClasses.JSONParser;
 import JSONClasses.JSONTokener;
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.KeyManagementException;
@@ -26,6 +30,10 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 /**
  *
@@ -35,29 +43,27 @@ public class VOEISAPI implements IModel{
 
     final private String devHost = "https://voeis-dev.msu.montana.edu/projects/";
     final private String projectID;
+    final private String apiKey;
     
-    public VOEISAPI(final String projectID) {
+    public VOEISAPI(final String projectID, final String apiKey) {
         this.projectID = projectID;
+        this.apiKey = apiKey;
     }
     
     public Map<Object, String> get_project_sites() {
         Map<Object, String> siteMap = new HashMap<Object, String>();
         try {
-            siteMap = JSONParser.getSites(httpGetRequest("/apivs/get_project_sites.json?", null));
+            siteMap = JSONParser.getNameInformation(httpGetRequest("/apivs/get_project_sites.json?", 0));
         } catch (Exception ex) {
             Logger.getLogger(VOEISAPI.class.getName()).log(Level.SEVERE, null, ex);
         }
         return siteMap;
     }
     
-    public Map<Object, String> get_project_data_templates(final String siteID) {
+    public Map<Object, String> get_project_data_templates(final int siteID) {
         Map<Object, String> dataTemplateMap = new HashMap<Object, String>();
-      
-        String[][] params = new String[1][2];   //Maybe change to a hash table
-        params[0][0] = "id";
-        params[0][1] = siteID.toString();
         try {
-            httpGetRequest("/apivs/get_project_data_templates.json?", null);
+            dataTemplateMap = JSONParser.getNameInformation(httpGetRequest("/apivs/get_project_data_templates.json?", siteID));
         }
         catch(Exception ex) {
             ex.printStackTrace();
@@ -65,8 +71,47 @@ public class VOEISAPI implements IModel{
         
         return dataTemplateMap;
     }
+    
+    //This part does not work
+    public void upload_data(File datafile, int data_template_id, int site_id, int start_line) throws Exception {
+        SSLSocketFactory sslSocketFactory = bypassCerts(); //DEV!!!
+        
+        URL url;
+        HttpURLConnection connection = null;
+        String target = devHost + projectID + "/apivs/upload_data.json?" + apiKey;
+        BufferedReader reader = null;
+        StringBuilder builder = null;
+        String line = null;
+        
+        try {
+              url = new URL(target);
+              connection = (HttpURLConnection)url.openConnection();
+              ((HttpsURLConnection) connection).setSSLSocketFactory(sslSocketFactory);
+              connection.setRequestMethod("POST");
+              connection.setDoOutput(true);
+              connection.setRequestProperty("datafile", "this");
+              connection.setRequestProperty("data_template_id", String.valueOf(data_template_id));
+              connection.setRequestProperty("site_id", String.valueOf(site_id));
+              connection.setRequestProperty("start_line", String.valueOf(start_line));
+              
+              OutputStream os = connection.getOutputStream();
+              
+              TransformerFactory tf = TransformerFactory.newInstance();
+              Transformer transformer = tf.newTransformer();
+              FileReader fileReader = new FileReader(datafile);
+              StreamSource source = new StreamSource(fileReader);
+              StreamResult result = new StreamResult(os);
+              
+              os.flush();
+              System.out.println(connection.getResponseCode());
+              connection.disconnect();
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 
-    private JSONArray httpGetRequest(String methodCall, String[][] params) throws IOException, NoSuchAlgorithmException, KeyManagementException {
+    private JSONArray httpGetRequest(String methodCall, final int ID) throws IOException, NoSuchAlgorithmException, KeyManagementException {
         
         SSLSocketFactory sslSocketFactory = bypassCerts();  //DEV!!!
         
@@ -85,6 +130,9 @@ public class VOEISAPI implements IModel{
               connection = (HttpURLConnection)url.openConnection();
               ((HttpsURLConnection) connection).setSSLSocketFactory(sslSocketFactory);
               connection.setRequestMethod("GET");
+              if (ID > 0) {
+                  connection.setRequestProperty("id", String.valueOf(ID));
+              }
               connection.setDoOutput(true);
               connection.setReadTimeout(10000);
               

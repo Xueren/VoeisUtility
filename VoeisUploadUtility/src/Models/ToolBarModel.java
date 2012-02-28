@@ -6,7 +6,6 @@ package Models;
 
 import Classes.LogFile;
 import Views.AboutView;
-import Views.IntervalView;
 import javax.swing.JFrame;
 
 /**
@@ -24,16 +23,6 @@ public class ToolBarModel implements IModel{
     public void loadAbout() {
         AboutView aView = new AboutView();
         aView.setVisible(true);
-    }
-
-    public void loadUploadInterval() {
-        IntervalView dView = new IntervalView(this);
-
-        frame.setTitle("Set Data Upload Interval");
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.add(dView);
-        frame.pack();
-        frame.setVisible(true);
     }
 
     public void openLogs() {

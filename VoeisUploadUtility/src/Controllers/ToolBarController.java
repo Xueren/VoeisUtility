@@ -8,9 +8,7 @@ import Models.ToolBarModel;
 import Models.ClientModel;
 import Views.ClientView;
 import Views.Container;
-import Views.MainView;
 import java.awt.event.ActionEvent;
-import javax.swing.JFrame;
 
 /**
  *
@@ -54,8 +52,6 @@ public class ToolBarController extends AbstractController{
             resetFields();
         else if (EXIT.equals(action))
             tModel.exitApplication();  
-        else if (DATA_INTERVAL.equals(action))
-            tModel.loadUploadInterval();
         else if (PUSH_LOGS.equals(action))
             tModel.openLogs();
         else if (ABOUT.equals(action))
@@ -66,7 +62,6 @@ public class ToolBarController extends AbstractController{
         view.setFile(null);
         view.setApiKey("");
         view.setProjectKey("");
-        view.setTemplateId("");
         view.setStartLine("");
         view.setTextFields();
     }

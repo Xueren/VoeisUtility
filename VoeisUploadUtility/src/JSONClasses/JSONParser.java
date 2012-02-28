@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public class JSONParser {
    
-    public static Map<Object, String> getSites(JSONArray jsonArr) {
+    public static Map<Object, String> getNameInformation(JSONArray jsonArr) {
         Map<Object, String> siteMap = new HashMap<Object, String>();
         
         try {    

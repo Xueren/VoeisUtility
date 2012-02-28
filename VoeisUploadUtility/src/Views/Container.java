@@ -30,8 +30,7 @@ public class Container extends JFrame {
     ToolBarModel tModel = new ToolBarModel();
     ClientModel uModel = new ClientModel();
     //File Menu Members
-    JMenuItem openItem = new JMenuItem("Open          Ctrl + O");
-    JMenuItem saveItem = new JMenuItem("Save          Ctrl + S");
+    JMenuItem saveItem = new JMenuItem("Save my settings         Ctrl + S");
     JMenuItem resetFieldsItem = new JMenuItem("Reset Fields ");
     JMenuItem exitItem = new JMenuItem("Exit    ");
     //Edit Menu Members
@@ -71,8 +70,6 @@ public class Container extends JFrame {
         //File Menu
         JMenu file = new JMenu("File");
         file.setMnemonic(KeyEvent.VK_F);
-        file.add(openItem);
-        openItem.setMnemonic(KeyEvent.VK_O);
         file.add(saveItem);
         saveItem.setMnemonic(KeyEvent.VK_S);
         file.add(new JSeparator());
@@ -118,8 +115,6 @@ public class Container extends JFrame {
     }
     
     public void setActionListeners(ActionListener al) {
-        openItem.setActionCommand("open");
-        openItem.addActionListener(al);
         saveItem.setActionCommand("save");
         saveItem.addActionListener(al);
         resetFieldsItem.setActionCommand("reset");
