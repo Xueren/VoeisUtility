@@ -6,7 +6,10 @@ package Models;
 
 import Classes.Validation;
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -86,5 +89,11 @@ public class ClientModel {
                 return Integer.parseInt(entry.getKey().toString());
         }
         return -999;
+    }
+    
+    public String getTimeStamp() {
+        DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+        Date timeStamp = new Date();
+        return dateFormat.format(timeStamp);
     }
 }

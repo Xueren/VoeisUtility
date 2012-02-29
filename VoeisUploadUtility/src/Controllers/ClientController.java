@@ -40,22 +40,46 @@ public class ClientController extends AbstractController{
         Collection<String> siteValues;
         Collection<String> tempValues = null;
         
-        if (action.equals(SAVE_KEYS)) {   
+        if (action.equals(SAVE_KEYS)) {                   
             if (view.getFlag()) {
+                if (view.getProjectKey() == null || view.getProjectKey().isEmpty()) {
+                    view.addEventRecord(model.getTimeStamp(), "No Project Key Found.", "Failure");
+                }
+                else {
             view.clearSiteComboBox();
+            try {
             siteValues = model.populateSites(view.getProjectKey());
             if (!siteValues.isEmpty()) {
                 Iterator<String> it = siteValues.iterator();
                
                 while(it.hasNext()) {
                     String value = it.next();
+                    if (value.equals("No Sites Found.")) {
+                        view.addEventRecord(model.getTimeStamp(), "Project key could not be Authenticated.\nIncorrect Project Key.", "Failure");
+                        break;
+                    }
                     view.setSitesComboBox(value);
                 }   
             }
             getTemplateData(tempValues);
+            view.addEventRecord(model.getTimeStamp(), "Project Key Authenticated.", "Success");
             view.setFlag(false);
-            }           
+            }
+          catch (Exception ex) {
+              view.addEventRecord(model.getTimeStamp(), ex.toString(), "Failure");
+              view.setFlag(true);
+            }
+          }
+         }
         }
+        if (action.equals(RESET_KEYS)) {
+            view.setFlag(true);
+            view.setProjectKey("");
+            view.setApiKey("");
+            view.setTextFields();
+            view.addEventRecord(model.getTimeStamp(), "API Key and Project Key reset.", "Success");
+        }
+        
         if (action.equals(SITE_CHANGED)) {          //NOTE: This is always being fired when a save action is performed.
             getTemplateData(tempValues);            //      This needs to be changed in the view so it is only fired when
         }                                           //      the combobox selected item is changed.

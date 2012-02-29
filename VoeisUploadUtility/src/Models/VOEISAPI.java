@@ -4,6 +4,7 @@
  */
 package Models;
 
+import Classes.BypassHttpAuthentication;
 import JSONClasses.JSONArray;
 import JSONClasses.JSONObject;
 import JSONClasses.JSONParser;
@@ -74,7 +75,8 @@ public class VOEISAPI implements IModel{
     
     //This part does not work
     public void upload_data(File datafile, int data_template_id, int site_id, int start_line) throws Exception {
-        SSLSocketFactory sslSocketFactory = bypassCerts(); //DEV!!!
+        BypassHttpAuthentication trustAll = new BypassHttpAuthentication();
+        SSLSocketFactory sslSocketFactory = trustAll.bypassCerts(); //DEV!!!
         
         URL url;
         HttpURLConnection connection = null;
@@ -112,8 +114,8 @@ public class VOEISAPI implements IModel{
     }
 
     private JSONArray httpGetRequest(String methodCall, final int ID) throws IOException, NoSuchAlgorithmException, KeyManagementException {
-        
-        SSLSocketFactory sslSocketFactory = bypassCerts();  //DEV!!!
+        BypassHttpAuthentication trustAll = new BypassHttpAuthentication();
+        SSLSocketFactory sslSocketFactory = trustAll.bypassCerts(); //DEV!!!
         
         JSONTokener tokener;
         JSONArray parsedArray = null;
@@ -168,28 +170,28 @@ public class VOEISAPI implements IModel{
      * certificate is used.  This is for DEV purposes ONLY and should be removed.
      ***********************************************************************************************/
     
-    private SSLSocketFactory bypassCerts() throws NoSuchAlgorithmException, KeyManagementException {
-        //Install trust manager for all certs
-        final SSLContext sslContext = SSLContext.getInstance("SSL");
-        sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
-        //Create ssl socket factory
-        final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
-        return sslSocketFactory;
-    }
-    
-    final TrustManager[] trustAllCerts = new TrustManager[] {new X509TrustManager() {
-        @Override
-        public void checkClientTrusted(final X509Certificate[] chain, final String authType) {    
-        }
-
-        @Override
-        public void checkServerTrusted(X509Certificate[] xcs, String string) throws CertificateException {
-        }
-
-        @Override
-        public X509Certificate[] getAcceptedIssuers() {
-             return null;
-        }
-      }
-    };
+//    private SSLSocketFactory bypassCerts() throws NoSuchAlgorithmException, KeyManagementException {
+//        //Install trust manager for all certs
+//        final SSLContext sslContext = SSLContext.getInstance("SSL");
+//        sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+//        //Create ssl socket factory
+//        final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+//        return sslSocketFactory;
+//    }
+//    
+//    final TrustManager[] trustAllCerts = new TrustManager[] {new X509TrustManager() {
+//        @Override
+//        public void checkClientTrusted(final X509Certificate[] chain, final String authType) {    
+//        }
+//
+//        @Override
+//        public void checkServerTrusted(X509Certificate[] xcs, String string) throws CertificateException {
+//        }
+//
+//        @Override
+//        public X509Certificate[] getAcceptedIssuers() {
+//             return null;
+//        }
+//      }
+//    };
 }
