@@ -1,7 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+    /***********************************************************************************************
+     * This class is used so that the application will not fail when a self-signed
+     * certificate is used.  This is for DEV purposes ONLY and should be removed.
+     ***********************************************************************************************/
 package Classes;
 
 import java.security.KeyManagementException;
@@ -17,7 +17,7 @@ import javax.net.ssl.X509TrustManager;
  *
  * @author afannin1
  */
-public class BypassHttpAuthentication {
+public class BypassJavaHttpAuthentication {
         public SSLSocketFactory bypassCerts() throws NoSuchAlgorithmException, KeyManagementException {
         //Install trust manager for all certs
         final SSLContext sslContext = SSLContext.getInstance("SSL");

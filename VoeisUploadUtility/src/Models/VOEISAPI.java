@@ -4,37 +4,33 @@
  */
 package Models;
 
-import Classes.BypassHttpAuthentication;
+import Classes.BypassApacheHttpAuthentication;
+import Classes.BypassJavaHttpAuthentication;
 import JSONClasses.JSONArray;
-import JSONClasses.JSONObject;
 import JSONClasses.JSONParser;
 import JSONClasses.JSONTokener;
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
+import org.apache.commons.fileupload.*;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.*;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.client.DefaultHttpClient;
+
 
 /**
  *
@@ -73,48 +69,41 @@ public class VOEISAPI implements IModel{
         return dataTemplateMap;
     }
     
-    //This part does not work
+    //Still getting 500 Server Error
     public void upload_data(File datafile, int data_template_id, int site_id, int start_line) throws Exception {
-        BypassHttpAuthentication trustAll = new BypassHttpAuthentication();
-        SSLSocketFactory sslSocketFactory = trustAll.bypassCerts(); //DEV!!!
-        
-        URL url;
-        HttpURLConnection connection = null;
-        String target = devHost + projectID + "/apivs/upload_data.json?" + apiKey;
-        BufferedReader reader = null;
-        StringBuilder builder = null;
-        String line = null;
-        
+
+        site_id = 2;
+        DefaultHttpClient client = new DefaultHttpClient();
+        client = (DefaultHttpClient) BypassApacheHttpAuthentication.wrapClient(client);
+        MultipartEntity entity;
+        String url = devHost + projectID + "/apivs/upload_data.json?api_key=" + apiKey;
+        HttpPost post;
         try {
-              url = new URL(target);
-              connection = (HttpURLConnection)url.openConnection();
-              ((HttpsURLConnection) connection).setSSLSocketFactory(sslSocketFactory);
-              connection.setRequestMethod("POST");
-              connection.setDoOutput(true);
-              connection.setRequestProperty("datafile", "this");
-              connection.setRequestProperty("data_template_id", String.valueOf(data_template_id));
-              connection.setRequestProperty("site_id", String.valueOf(site_id));
-              connection.setRequestProperty("start_line", String.valueOf(start_line));
-              
-              OutputStream os = connection.getOutputStream();
-              
-              TransformerFactory tf = TransformerFactory.newInstance();
-              Transformer transformer = tf.newTransformer();
-              FileReader fileReader = new FileReader(datafile);
-              StreamSource source = new StreamSource(fileReader);
-              StreamResult result = new StreamResult(os);
-              
-              os.flush();
-              System.out.println(connection.getResponseCode());
-              connection.disconnect();
+            post = new HttpPost(url);
+            entity = new MultipartEntity();
+            
+            FileBody fileBody = new FileBody(datafile);
+            entity.addPart("datafile", fileBody);
+            entity.addPart("data_template_id", new StringBody(String.valueOf(data_template_id), Charset.forName("UTF-8")));
+            entity.addPart("site_id", new StringBody(String.valueOf(site_id), Charset.forName("UTF-8")));
+            entity.addPart("start_line", new StringBody(String.valueOf(start_line), Charset.forName("UTF-8")));
+
+            post.setEntity(entity);
+            
+            HttpResponse response = client.execute(post);
+            System.out.println(response.getStatusLine());
+            
         }
-        catch (Exception ex) {
+        catch(Exception ex) {
             ex.printStackTrace();
+        }
+        finally {
+ 
         }
     }
 
     private JSONArray httpGetRequest(String methodCall, final int ID) throws IOException, NoSuchAlgorithmException, KeyManagementException {
-        BypassHttpAuthentication trustAll = new BypassHttpAuthentication();
+        BypassJavaHttpAuthentication trustAll = new BypassJavaHttpAuthentication();
         SSLSocketFactory sslSocketFactory = trustAll.bypassCerts(); //DEV!!!
         
         JSONTokener tokener;
@@ -146,7 +135,6 @@ public class VOEISAPI implements IModel{
               while((line = reader.readLine()) != null) {
                   builder.append(line).append('\n');
               }
-              
               tokener = new JSONTokener(builder.toString());
               parsedArray = new JSONArray(tokener);
               //parsedString = new JSONObject(tokener);
@@ -164,34 +152,4 @@ public class VOEISAPI implements IModel{
               return parsedArray;
           }
     }
-
-    /***********************************************************************************************
-     * The Following methods are used so that the application will not fail when a self-signed
-     * certificate is used.  This is for DEV purposes ONLY and should be removed.
-     ***********************************************************************************************/
-    
-//    private SSLSocketFactory bypassCerts() throws NoSuchAlgorithmException, KeyManagementException {
-//        //Install trust manager for all certs
-//        final SSLContext sslContext = SSLContext.getInstance("SSL");
-//        sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
-//        //Create ssl socket factory
-//        final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
-//        return sslSocketFactory;
-//    }
-//    
-//    final TrustManager[] trustAllCerts = new TrustManager[] {new X509TrustManager() {
-//        @Override
-//        public void checkClientTrusted(final X509Certificate[] chain, final String authType) {    
-//        }
-//
-//        @Override
-//        public void checkServerTrusted(X509Certificate[] xcs, String string) throws CertificateException {
-//        }
-//
-//        @Override
-//        public X509Certificate[] getAcceptedIssuers() {
-//             return null;
-//        }
-//      }
-//    };
 }

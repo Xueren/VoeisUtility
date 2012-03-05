@@ -18,10 +18,11 @@ import java.util.logging.Logger;
  */
 public class ClientController extends AbstractController{
 
-    public static final String START = "start";
-    public static final String SAVE_KEYS = "saveKeys";
-    public static final String RESET_KEYS = "resetKeys";
-    public static final String SITE_CHANGED = "siteChanged";
+    private static final String START = "start";
+    private static final String STOP = "stop";
+    private static final String SAVE_KEYS = "saveKeys";
+    private static final String RESET_KEYS = "resetKeys";
+    private static final String SITE_CHANGED = "siteChanged";
     
         
     ClientModel model;
@@ -72,25 +73,34 @@ public class ClientController extends AbstractController{
           }
          }
         }
-        if (action.equals(RESET_KEYS)) {
+        else if (action.equals(RESET_KEYS)) {
             view.setFlag(true);
             view.setProjectKey("");
             view.setApiKey("");
             view.setTextFields();
+            view.clearTemplateComboBox();       
+            view.clearSiteComboBox();               //Throws NullPointerException because the SITE_CHANGED action is fired.
             view.addEventRecord(model.getTimeStamp(), "API Key and Project Key reset.", "Success");
         }
         
-        if (action.equals(SITE_CHANGED)) {          //NOTE: This is always being fired when a save action is performed.
+        else if (action.equals(SITE_CHANGED)) {          //NOTE: This is always being fired when a save action is performed.
             getTemplateData(tempValues);            //      This needs to be changed in the view so it is only fired when
         }                                           //      the combobox selected item is changed.
         
-        if (action.equals(START)) {
+        else if (action.equals(START)) {
             try {
                 //Check and make sure all fields are valid, then perform HTTP Post Request
                 model.pushData(view.getFile(),view.getSite(), view.getTemplateId(), 1, view.getProjectKey(), view.getApiKey());
             } catch (Exception ex) {
                 Logger.getLogger(ClientController.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
+        else if (action.equals(STOP)) {
+            /*TODO: Check if service is currently running
+             *      and the application and threads can
+             *      be safetly terminated.  
+             */
+            view.addEventRecord(model.getTimeStamp(), "Service successfully stopped.", "Success");
         }
     }
 
@@ -105,6 +115,5 @@ public class ClientController extends AbstractController{
                 view.setTemplateComboBox(val);
             }
         }
-    }
-    
+    }   
 }

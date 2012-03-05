@@ -374,7 +374,8 @@ public class ClientView extends javax.swing.JPanel {
     private void projectTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_projectTextFieldFocusLost
         projectKey = projectTextField.getText();
     }//GEN-LAST:event_projectTextFieldFocusLost
-    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!DEBUG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField apiTextField;
     private javax.swing.JButton browseButton;
@@ -432,6 +433,8 @@ public class ClientView extends javax.swing.JPanel {
     public void setActionListeners(ActionListener al) {
         startButton.setActionCommand("start");
         startButton.addActionListener(al);
+        stopButton.setActionCommand("stop");
+        stopButton.addActionListener(al);
         saveKeyButton.setActionCommand("saveKeys");
         saveKeyButton.addActionListener(al);
         resetKeyButton.setActionCommand("resetKeys");
@@ -479,7 +482,7 @@ public class ClientView extends javax.swing.JPanel {
         tableModel.addRow(row);
     }
     
-    public void createTableModel() {
+    private void createTableModel() {
         tableModel.addColumn("Time Stamp");
         tableModel.addColumn("Message");
         tableModel.addColumn("Status");
