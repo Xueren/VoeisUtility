@@ -17,15 +17,15 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
-import org.apache.commons.fileupload.*;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.*;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
@@ -39,12 +39,17 @@ import org.apache.http.impl.client.DefaultHttpClient;
 public class VOEISAPI implements IModel{
 
     final private String devHost = "https://voeis-dev.msu.montana.edu/projects/";
+        final private String devHost2 = "https://voeis-dev.msu.montana.edu";
     final private String projectID;
     final private String apiKey;
+    Properties props = System.getProperties();  //To view HTTPS traffic via Fiddler
+
     
     public VOEISAPI(final String projectID, final String apiKey) {
         this.projectID = projectID;
         this.apiKey = apiKey;
+        //props.put("https.proxyHost", "127.0.0.1");
+        //props.put("https.proxyPort", "8888");
     }
     
     public Map<Object, String> get_project_sites() {
@@ -70,15 +75,17 @@ public class VOEISAPI implements IModel{
     }
     
     //Still getting 500 Server Error
-    public void upload_data(File datafile, int data_template_id, int site_id, int start_line) throws Exception {
-
-        site_id = 2;
+    public void upload_data(File datafile, int data_template_id, int site_id, int start_line) throws Exception {     
+        site_id = 2;    //This is just for debug when calling the upload_data method.
+        HttpHost proxy = new HttpHost("127.0.0.1", 8888, "http");
         DefaultHttpClient client = new DefaultHttpClient();
         client = (DefaultHttpClient) BypassApacheHttpAuthentication.wrapClient(client);
         MultipartEntity entity;
         String url = devHost + projectID + "/apivs/upload_data.json?api_key=" + apiKey;
         HttpPost post;
         try {
+            client.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+            //HttpHost target = new HttpHost(url, 8888, "https");
             post = new HttpPost(url);
             entity = new MultipartEntity();
             
@@ -92,6 +99,7 @@ public class VOEISAPI implements IModel{
             
             HttpResponse response = client.execute(post);
             System.out.println(response.getStatusLine());
+            System.out.println(response.getAllHeaders().toString());
             
         }
         catch(Exception ex) {
