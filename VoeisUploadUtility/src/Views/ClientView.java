@@ -10,10 +10,12 @@
  */
 package Views;
 
+import Classes.UserSettings;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileFilter;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -26,6 +28,10 @@ public class ClientView extends javax.swing.JPanel {
     private String projectKey;
     private String startLine; 
     private File file;
+    private int days;
+    private int hours;
+    private int minutes;
+    private int timeOut;
     private Boolean flag = true;
     DefaultTableModel tableModel;
     /** Creates new form ClientView */
@@ -33,6 +39,7 @@ public class ClientView extends javax.swing.JPanel {
         initComponents();
         createTableModel();
         populateComboBoxes();
+        getPreferences();
     }
     
     public String getApiKey() {
@@ -73,6 +80,38 @@ public class ClientView extends javax.swing.JPanel {
     
     public void setFile(File file) {
         this.file = file;
+    }
+    
+    public int getDays() {
+        return Integer.valueOf(daysComboBox.getSelectedItem().toString());
+    }
+    
+    public void setDays(int days) {
+        daysComboBox.setSelectedItem(days);
+    }
+    
+    public int getHours() {
+        return Integer.valueOf(hoursComboBox.getSelectedItem().toString());
+    }
+    
+    public void setHours(int hours) {
+        hoursComboBox.setSelectedItem(hours);
+    }    
+    
+    public int getMinutes() {
+        return Integer.valueOf(minutesComboBox.getSelectedItem().toString());
+    }
+    
+    public void setMinutes(int minutes) {
+        minutesComboBox.setSelectedItem(minutes);
+    }
+
+    public int getTimeOut() {
+        return Integer.valueOf(timeoutComboBox.getSelectedItem().toString());
+    }
+    
+    public void setTimeOut(int timeOut) {
+        timeoutComboBox.setSelectedItem(timeOut);
     }
     
     public void setSitesComboBox(String str) {
@@ -138,6 +177,12 @@ public class ClientView extends javax.swing.JPanel {
         jLabel6 = new javax.swing.JLabel();
         startButton = new javax.swing.JButton();
         stopButton = new javax.swing.JButton();
+
+        resultsPane.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                resultsPaneStateChanged(evt);
+            }
+        });
 
         jLabel1.setText("Push Interval:");
 
@@ -220,7 +265,7 @@ public class ClientView extends javax.swing.JPanel {
             }
         });
 
-        saveKeyButton.setText("Use Keys");
+        saveKeyButton.setText("Validate Keys");
 
         resetKeyButton.setText("Reset Keys");
 
@@ -335,11 +380,11 @@ public class ClientView extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(resultsPane, javax.swing.GroupLayout.DEFAULT_SIZE, 630, Short.MAX_VALUE)
+                    .addComponent(resultsPane)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel6)
                         .addGap(18, 18, 18)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 560, Short.MAX_VALUE))
+                        .addComponent(jScrollPane1))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(startButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -374,6 +419,18 @@ public class ClientView extends javax.swing.JPanel {
     private void projectTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_projectTextFieldFocusLost
         projectKey = projectTextField.getText();
     }//GEN-LAST:event_projectTextFieldFocusLost
+
+    private void resultsPaneStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_resultsPaneStateChanged
+        if (resultsPane.getSelectedIndex() == 2) {
+          if (siteComboBox.getItemCount() < 1) {
+            int x;
+            x = JOptionPane.showConfirmDialog(null,"It appears that you have not validated your API and Project Keys.\nTo use this form you must first validate your keys.\nValidate keys now?", "Keys not Found", JOptionPane.YES_NO_OPTION);
+            if (x == JOptionPane.YES_OPTION) {
+                saveKeyButton.doClick();
+            }
+          }
+       }
+    }//GEN-LAST:event_resultsPaneStateChanged
 
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -486,5 +543,21 @@ public class ClientView extends javax.swing.JPanel {
         tableModel.addColumn("Time Stamp");
         tableModel.addColumn("Message");
         tableModel.addColumn("Status");
+    }
+
+    private void getPreferences() {
+        UserSettings settings = new UserSettings();
+        setApiKey(settings.getApiKey());
+        apiTextField.setText(apiKey);
+        setProjectKey(settings.getProjectId());
+        projectTextField.setText(projectKey);
+        setDays(settings.setDays());
+        setHours(settings.setHours());
+        setMinutes(settings.setMinutes());
+        setTimeOut(settings.setTimeOut());
+    }
+
+    private void isSaved() {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }

@@ -24,6 +24,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.entity.mime.MultipartEntity;
@@ -39,7 +40,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 public class VOEISAPI implements IModel{
 
     final private String devHost = "https://voeis-dev.msu.montana.edu/projects/";
-        final private String devHost2 = "https://voeis-dev.msu.montana.edu";
+    final private String devHost2 = "https://voeis-dev.msu.montana.edu";
     final private String projectID;
     final private String apiKey;
     Properties props = System.getProperties();  //To view HTTPS traffic via Fiddler
@@ -99,7 +100,6 @@ public class VOEISAPI implements IModel{
             
             HttpResponse response = client.execute(post);
             System.out.println(response.getStatusLine());
-            System.out.println(response.getAllHeaders().toString());
             
         }
         catch(Exception ex) {
@@ -111,33 +111,26 @@ public class VOEISAPI implements IModel{
     }
 
     private JSONArray httpGetRequest(String methodCall, final int ID) throws IOException, NoSuchAlgorithmException, KeyManagementException {
-        BypassJavaHttpAuthentication trustAll = new BypassJavaHttpAuthentication();
-        SSLSocketFactory sslSocketFactory = trustAll.bypassCerts(); //DEV!!!
+        HttpHost proxy = new HttpHost("127.0.0.1", 8888, "http");
+        DefaultHttpClient client = new DefaultHttpClient();
+        client = (DefaultHttpClient) BypassApacheHttpAuthentication.wrapClient(client);
+        HttpGet get;
+        HttpResponse response;  
+        String target = devHost + projectID + methodCall;
         
         JSONTokener tokener;
         JSONArray parsedArray = null;
 
-          URL url;
-          HttpURLConnection connection = null;
-          String target = devHost + projectID + methodCall;
-          BufferedReader reader = null;
-          StringBuilder builder = null;
-          String line = null;
+        BufferedReader reader = null;
+        StringBuilder builder = null;
+        String line = null;
           
           try {
-              url = new URL(target);
-              connection = (HttpURLConnection)url.openConnection();
-              ((HttpsURLConnection) connection).setSSLSocketFactory(sslSocketFactory);
-              connection.setRequestMethod("GET");
-              if (ID > 0) {
-                  connection.setRequestProperty("id", String.valueOf(ID));
-              }
-              connection.setDoOutput(true);
-              connection.setReadTimeout(10000);
+              client.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+              get = new HttpGet(target);
+              response = client.execute(get);
               
-              connection.connect();
-              
-              reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+              reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
               builder = new StringBuilder();
               
               while((line = reader.readLine()) != null) {
@@ -153,11 +146,66 @@ public class VOEISAPI implements IModel{
                       ex.printStackTrace();
                   }
           finally {
-              connection.disconnect();
               reader = null;
               builder = null;
-              connection = null;
               return parsedArray;
           }
     }
+    
+    
+    /*NOTE: This is how the GET request was executed using Java's libraries.
+     *      This has been switched to a method that uses Apache's HTTPComponents
+     *      but I kept this here for legacy purposes.
+     *      A.F. 09 March 2012
+     */
+//    private JSONArray httpGetRequest(String methodCall, final int ID) throws IOException, NoSuchAlgorithmException, KeyManagementException {
+//        BypassJavaHttpAuthentication trustAll = new BypassJavaHttpAuthentication();
+//        SSLSocketFactory sslSocketFactory = trustAll.bypassCerts(); //DEV!!!
+//        
+//        JSONTokener tokener;
+//        JSONArray parsedArray = null;
+//
+//          URL url;
+//          HttpURLConnection connection = null;
+//          String target = devHost + projectID + methodCall;
+//          BufferedReader reader = null;
+//          StringBuilder builder = null;
+//          String line = null;
+//          
+//          try {
+//              url = new URL(target);
+//              connection = (HttpURLConnection)url.openConnection();
+//              ((HttpsURLConnection) connection).setSSLSocketFactory(sslSocketFactory);
+//              connection.setRequestMethod("GET");
+//              if (ID > 0) {
+//                  connection.setRequestProperty("id", String.valueOf(ID));
+//              }
+//              connection.setDoOutput(true);
+//              connection.setReadTimeout(10000);
+//              
+//              connection.connect();
+//              
+//              reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+//              builder = new StringBuilder();
+//              
+//              while((line = reader.readLine()) != null) {
+//                  builder.append(line).append('\n');
+//              }
+//              tokener = new JSONTokener(builder.toString());
+//              parsedArray = new JSONArray(tokener);
+//              //parsedString = new JSONObject(tokener);
+//              JSONParser.printJSONString(parsedArray);
+//              //System.out.println(builder.toString());
+//          }
+//                  catch (Exception ex){
+//                      ex.printStackTrace();
+//                  }
+//          finally {
+//              connection.disconnect();
+//              reader = null;
+//              builder = null;
+//              connection = null;
+//              return parsedArray;
+//          }
+//    }
 }

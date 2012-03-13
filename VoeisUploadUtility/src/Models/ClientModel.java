@@ -4,6 +4,7 @@
  */
 package Models;
 
+import Classes.UserSettings;
 import Classes.Validation;
 import java.io.File;
 import java.text.DateFormat;
@@ -95,5 +96,10 @@ public class ClientModel {
         DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
         Date timeStamp = new Date();
         return dateFormat.format(timeStamp);
+    }
+
+    public void savePreferences(String apiKey, String projectId, int days, int hours, int minutes, int timeOut) {
+        UserSettings settings = new UserSettings();
+        settings.saveSettings(apiKey, projectId, days, hours, minutes, timeOut);
     }
 }

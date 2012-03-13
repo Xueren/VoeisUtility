@@ -16,6 +16,7 @@ import java.awt.event.ActionEvent;
  */
 public class ToolBarController extends AbstractController{
 
+    public static final String SAVE = "save";
     public static final String OPEN = "open";
     public static final String RESET_FIELDS = "reset";
     public static final String EXIT = "exit";
@@ -56,6 +57,8 @@ public class ToolBarController extends AbstractController{
             tModel.openLogs();
         else if (ABOUT.equals(action))
             tModel.loadAbout();
+        else if (SAVE.equals(action))
+            uModel.savePreferences(view.getApiKey(), view.getProjectKey(), view.getDays(), view.getHours(), view.getMinutes(), view.getTimeOut());
     }
 
     private void resetFields() {
