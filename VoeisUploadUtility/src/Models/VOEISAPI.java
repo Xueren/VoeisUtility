@@ -115,7 +115,7 @@ public class VOEISAPI implements IModel{
         DefaultHttpClient client = new DefaultHttpClient();
         client = (DefaultHttpClient) BypassApacheHttpAuthentication.wrapClient(client);
         HttpGet get;
-        HttpResponse response;  
+        HttpResponse response;
         String target = devHost + projectID + methodCall;
         
         JSONTokener tokener;

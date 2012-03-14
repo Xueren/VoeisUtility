@@ -98,8 +98,15 @@ public class ClientModel {
         return dateFormat.format(timeStamp);
     }
 
-    public void savePreferences(String apiKey, String projectId, int days, int hours, int minutes, int timeOut) {
+    public boolean savePreferences(String apiKey, String projectId, int days, int hours, int minutes, int timeOut) {
         UserSettings settings = new UserSettings();
-        settings.saveSettings(apiKey, projectId, days, hours, minutes, timeOut);
+        try {
+        settings.saveSettings(apiKey, projectId, days, hours, minutes, timeOut); 
+        return true;
+        }
+        catch(Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
     }
 }

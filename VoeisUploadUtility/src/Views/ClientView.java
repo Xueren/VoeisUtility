@@ -14,6 +14,9 @@ import Classes.UserSettings;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileFilter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -424,7 +427,7 @@ public class ClientView extends javax.swing.JPanel {
         if (resultsPane.getSelectedIndex() == 2) {
           if (siteComboBox.getItemCount() < 1) {
             int x;
-            x = JOptionPane.showConfirmDialog(null,"It appears that you have not validated your API and Project Keys.\nTo use this form you must first validate your keys.\nValidate keys now?", "Keys not Found", JOptionPane.YES_NO_OPTION);
+            x = JOptionPane.showConfirmDialog(null,"It appears that you have not validated your API and Project Keys.\nTo use this form you must first validate your keys.\nValidate keys now?", "Keys Not Validated", JOptionPane.YES_NO_OPTION);
             if (x == JOptionPane.YES_OPTION) {
                 saveKeyButton.doClick();
             }
@@ -479,8 +482,10 @@ public class ClientView extends javax.swing.JPanel {
         int returnVal = chooser.showOpenDialog(this); 
 
         try {
-        if (returnVal == JFileChooser.APPROVE_OPTION)
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
             setFile(chooser.getSelectedFile());
+            this.addEventRecord(this.getTimeStamp(), "File " + chooser.getSelectedFile() + " has been chosen for upload", "Success");
+        }   
         }
         catch(NullPointerException ex) {
             //Do nothing.  This is thrown on a Cancel operation and Close
@@ -559,5 +564,12 @@ public class ClientView extends javax.swing.JPanel {
 
     private void isSaved() {
         throw new UnsupportedOperationException("Not yet implemented");
+    }
+    
+    //Adding this in the view is redundant.  This could be refactored into a date class if it needs to be used often
+    private String getTimeStamp() {
+        DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+        Date timeStamp = new Date();
+        return dateFormat.format(timeStamp);
     }
 }

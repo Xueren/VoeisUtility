@@ -57,8 +57,12 @@ public class ToolBarController extends AbstractController{
             tModel.openLogs();
         else if (ABOUT.equals(action))
             tModel.loadAbout();
-        else if (SAVE.equals(action))
-            uModel.savePreferences(view.getApiKey(), view.getProjectKey(), view.getDays(), view.getHours(), view.getMinutes(), view.getTimeOut());
+        else if (SAVE.equals(action)) {
+            if (uModel.savePreferences(view.getApiKey(), view.getProjectKey(), view.getDays(), view.getHours(), view.getMinutes(), view.getTimeOut()))
+                view.addEventRecord(uModel.getTimeStamp(), "User settings have been saved.", "Success");
+            else
+                view.addEventRecord(uModel.getTimeStamp(), "An error has occured when saving the user settings.", "Failure");
+        }
     }
 
     private void resetFields() {
