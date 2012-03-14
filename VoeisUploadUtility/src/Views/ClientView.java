@@ -10,7 +10,7 @@
  */
 package Views;
 
-import Classes.UserSettings;
+import Classes.SaveSettings;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileFilter;
@@ -551,16 +551,16 @@ public class ClientView extends javax.swing.JPanel {
     }
 
     private void getPreferences() {
-        UserSettings settings = new UserSettings();
-        setApiKey(settings.getApiKey());
+       SaveSettings settings = new SaveSettings();
+        apiKey = settings.getApiKey();
         apiTextField.setText(apiKey);
-        setProjectKey(settings.getProjectId());
+        setProjectKey(settings.getProjectKey());
         projectTextField.setText(projectKey);
-        setDays(settings.setDays());
-        setHours(settings.setHours());
-        setMinutes(settings.setMinutes());
-        setTimeOut(settings.setTimeOut());
-    }
+        setDays(settings.getDays());
+        setHours(settings.getHours());
+       setMinutes(settings.getMinutes());
+        setTimeOut(settings.getTimeOut());
+   }
 
     private void isSaved() {
         throw new UnsupportedOperationException("Not yet implemented");

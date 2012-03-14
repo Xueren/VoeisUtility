@@ -4,7 +4,7 @@
  */
 package Models;
 
-import Classes.UserSettings;
+import Classes.SaveSettings;
 import Classes.Validation;
 import java.io.File;
 import java.text.DateFormat;
@@ -12,9 +12,11 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  *
@@ -99,9 +101,9 @@ public class ClientModel {
     }
 
     public boolean savePreferences(String apiKey, String projectId, int days, int hours, int minutes, int timeOut) {
-        UserSettings settings = new UserSettings();
+        SaveSettings settings = new SaveSettings();
         try {
-        settings.saveSettings(apiKey, projectId, days, hours, minutes, timeOut); 
+        settings.setPreference(apiKey, projectId, days, hours, minutes, timeOut); 
         return true;
         }
         catch(Exception ex) {
