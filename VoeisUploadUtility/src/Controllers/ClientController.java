@@ -20,7 +20,7 @@ public class ClientController extends AbstractController{
 
     private static final String START = "start";
     private static final String STOP = "stop";
-    private static final String SAVE_KEYS = "saveKeys";
+    private static final String VALIDATE_KEY = "validateKey";
     private static final String RESET_KEYS = "resetKeys";
     private static final String SITE_CHANGED = "siteChanged";
     
@@ -41,7 +41,7 @@ public class ClientController extends AbstractController{
         Collection<String> siteValues;
         Collection<String> tempValues = null;
         
-        if (action.equals(SAVE_KEYS)) {                   
+        if (action.equals(VALIDATE_KEY)) {                   
             if (view.getFlag()) {
                 if (view.getProjectKey() == null || view.getProjectKey().isEmpty()) {
                     view.addEventRecord(model.getTimeStamp(), "No Project Key Found.", "Failure");
