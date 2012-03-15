@@ -10,7 +10,7 @@
  */
 package Views;
 
-import Classes.SaveSettings;
+import Classes.UserSettings;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileFilter;
@@ -165,7 +165,7 @@ public class ClientView extends javax.swing.JPanel {
         jLabel8 = new javax.swing.JLabel();
         apiTextField = new javax.swing.JTextField();
         projectTextField = new javax.swing.JTextField();
-        validateKey = new javax.swing.JButton();
+        saveKeyButton = new javax.swing.JButton();
         resetKeyButton = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
@@ -268,7 +268,7 @@ public class ClientView extends javax.swing.JPanel {
             }
         });
 
-        validateKey.setText("Validate Keys");
+        saveKeyButton.setText("Validate Keys");
 
         resetKeyButton.setText("Reset Keys");
 
@@ -280,7 +280,7 @@ public class ClientView extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(validateKey)
+                        .addComponent(saveKeyButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(resetKeyButton))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
@@ -307,7 +307,7 @@ public class ClientView extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(resetKeyButton)
-                    .addComponent(validateKey))
+                    .addComponent(saveKeyButton))
                 .addContainerGap(26, Short.MAX_VALUE))
         );
 
@@ -429,7 +429,7 @@ public class ClientView extends javax.swing.JPanel {
             int x;
             x = JOptionPane.showConfirmDialog(null,"It appears that you have not validated your API and Project Keys.\nTo use this form you must first validate your keys.\nValidate keys now?", "Keys Not Validated", JOptionPane.YES_NO_OPTION);
             if (x == JOptionPane.YES_OPTION) {
-                validateKey.doClick();
+                saveKeyButton.doClick();
             }
           }
        }
@@ -462,12 +462,12 @@ public class ClientView extends javax.swing.JPanel {
     private javax.swing.JTextField projectTextField;
     private javax.swing.JButton resetKeyButton;
     private javax.swing.JTabbedPane resultsPane;
+    private javax.swing.JButton saveKeyButton;
     private javax.swing.JComboBox siteComboBox;
     private javax.swing.JButton startButton;
     private javax.swing.JButton stopButton;
     private javax.swing.JComboBox templateComboBox;
     private javax.swing.JComboBox timeoutComboBox;
-    private javax.swing.JButton validateKey;
     // End of variables declaration//GEN-END:variables
 
     public void loadFile() {
@@ -497,8 +497,8 @@ public class ClientView extends javax.swing.JPanel {
         startButton.addActionListener(al);
         stopButton.setActionCommand("stop");
         stopButton.addActionListener(al);
-        validateKey.setActionCommand("validateKey");
-        validateKey.addActionListener(al);
+        saveKeyButton.setActionCommand("saveKeys");
+        saveKeyButton.addActionListener(al);
         resetKeyButton.setActionCommand("resetKeys");
         resetKeyButton.addActionListener(al);
         siteComboBox.setActionCommand("siteChanged");
@@ -551,15 +551,15 @@ public class ClientView extends javax.swing.JPanel {
     }
 
     private void getPreferences() {
-       SaveSettings settings = new SaveSettings();
-        apiKey = settings.getApiKey();
+        UserSettings settings = new UserSettings();
+        setApiKey(settings.getApiKey());
         apiTextField.setText(apiKey);
-        setProjectKey(settings.getProjectKey());
+        setProjectKey(settings.getProjectId());
         projectTextField.setText(projectKey);
-        setDays(settings.getDays());
-        setHours(settings.getHours());
-        setMinutes(settings.getMinutes());
-        setTimeOut(settings.getTimeOut());
+        setDays(settings.setDays());
+        setHours(settings.setHours());
+        setMinutes(settings.setMinutes());
+        setTimeOut(settings.setTimeOut());
    }
 
     private void isSaved() {
